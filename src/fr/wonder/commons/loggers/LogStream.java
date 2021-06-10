@@ -8,7 +8,8 @@ public class LogStream extends OutputStream {
 	private final Logger logger;
 	private final int level;
 	
-	private final StringBuffer buffer = new StringBuffer();
+	private final byte[] buffer = new byte[4096];
+	private int length;
 	
 	public LogStream(Logger logger, int level) {
 		this.logger = logger;
@@ -20,13 +21,15 @@ public class LogStream extends OutputStream {
 		if(b == '\n')
 			flush();
 		else
-			buffer.append((char) b);
+			buffer[length++] = (byte) b;
 	}
 	
 	@Override
 	public void flush() {
-		logger.log(buffer.toString(), level);
-		buffer.setLength(0);
+		if(length == 0)
+			return;
+		logger.log(new String(buffer, 0, length), level);
+		length = 0;
 	}
 	
 }

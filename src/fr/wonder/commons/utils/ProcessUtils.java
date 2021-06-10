@@ -38,7 +38,10 @@ public class ProcessUtils {
 	 * Creates a new thread that reads from both process input and error streams and
 	 * dumps them into the provided streams until the process exits or the thread is
 	 * interrupted. IO errors are discarded while reading/writing from/to the
-	 * process/output streams.
+	 * process/output streams.<br>
+	 * <br>
+	 * This thread <b>must be started by the caller</b>. It is returned with a default
+	 * name that can (and should) be changed before starting the redirection.
 	 * 
 	 * FIX for some reason a non-stopping python script will not output anything, check if it is a "normal" behavior
 	 */
@@ -66,6 +69,8 @@ public class ProcessUtils {
 						pin.transferTo(out);
 					if(perr.available() > 0)
 						perr.transferTo(err);
+					out.flush();
+					err.flush();
 				} catch (IOException x) { }
 			}
 		};
