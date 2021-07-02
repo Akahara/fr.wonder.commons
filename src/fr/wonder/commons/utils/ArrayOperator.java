@@ -301,6 +301,20 @@ public class ArrayOperator<T> {
 		return removeIf(array, filter.negate());
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static <T> T[] filter(Object[] array, Class<T> clazz) {
+		int count = 0;
+		for(Object o : array)
+			if(clazz.isInstance(o))
+				count++;
+		T[] narr = (T[]) Array.newInstance(clazz, count);
+		count = 0;
+		for(Object o : array)
+			if(clazz.isInstance(o))
+				narr[count++] = (T) o;
+		return narr;
+	}
+	
 	public ArrayOperator<T> toggle(T t) {
 		if (array.contains(t))
 			array.remove(t);
@@ -364,6 +378,10 @@ public class ArrayOperator<T> {
 		for(int i = 0; i < from.length; i++)
 			to[i] = f.apply(from[i]);
 		return to;
+	}
+	
+	public static <T> Object[] map(T[] from, Function<T, Object> f) {
+		return map(from, new Object[from.length], f);
 	}
 	
 	public ArrayOperator<T> removeDuplicates() {
@@ -434,61 +452,89 @@ public class ArrayOperator<T> {
 		return false;
 	}
 	
-	public static <T> boolean contains(T[] array, T t) {
-		for(T tt : array)
-			if(Objects.equals(t, tt))
-				return true;
-		return false;
-	}
-	
-	public static boolean contains(int[] array, int t) {
-		for(int tt : array)
-			if(Objects.equals(t, tt))
-				return true;
-		return false;
-	}
-	
-	public static boolean contains(float[] array, float t) {
-		for(float tt : array)
-			if(Objects.equals(t, tt))
-				return true;
-		return false;
-	}
-	
-	public static boolean contains(char[] array, char t) {
-		for(char tt : array)
-			if(Objects.equals(t, tt))
-				return true;
-		return false;
-	}
-	
-	public static boolean contains(byte[] array, byte t) {
-		for(byte tt : array)
-			if(Objects.equals(t, tt))
-				return true;
-		return false;
-	}
-	
-	public static boolean contains(long[] array, long t) {
-		for(long tt : array)
-			if(Objects.equals(t, tt))
-				return true;
-		return false;
-	}
-	
-	public static boolean contains(double[] array, double t) {
-		for(double tt : array)
-			if(Objects.equals(t, tt))
-				return true;
-		return false;
-	}
-
 	public static <T, K> boolean containsMapped(T[] array, K value, Function<T, K> map) {
 		for(T t : array) {
 			if(Objects.equals(value, map.apply(t)))
 				return true;
 		}
 		return false;
+	}
+	
+	public static <T> int indexOf(T[] array, T t) {
+		for(int i = 0; i < array.length; i++)
+			if(Objects.equals(array[i], t))
+				return i;
+		return -1;
+	}
+
+	public static int indexOf(int[] array, int x) {
+		for(int i = 0; i < array.length; i++)
+			if(array[i] == x)
+				return i;
+		return -1;
+	}
+
+	public static int indexOf(float[] array, float x) {
+		for(int i = 0; i < array.length; i++)
+			if(array[i] == x)
+				return i;
+		return -1;
+	}
+
+	public static int indexOf(double[] array, double x) {
+		for(int i = 0; i < array.length; i++)
+			if(array[i] == x)
+				return i;
+		return -1;
+	}
+
+	public static int indexOf(char[] array, char x) {
+		for(int i = 0; i < array.length; i++)
+			if(array[i] == x)
+				return i;
+		return -1;
+	}
+
+	public static int indexOf(short[] array, short x) {
+		for(int i = 0; i < array.length; i++)
+			if(array[i] == x)
+				return i;
+		return -1;
+	}
+
+	public static int indexOf(long[] array, long x) {
+		for(int i = 0; i < array.length; i++)
+			if(array[i] == x)
+				return i;
+		return -1;
+	}
+	
+	public static <T> boolean contains(T[] array, T t) {
+		return indexOf(array, t) != -1;
+	}
+	
+	public static boolean contains(int[] array, int x) {
+		return indexOf(array, x) != -1;
+	}
+	
+	public static boolean contains(float[] array, float x) {
+		return indexOf(array, x) != -1;
+	}
+	
+	public static boolean contains(char[] array, char x) {
+		return indexOf(array, x) != -1;
+	}
+	
+	public static boolean contains(short[] array, short x) {
+		return indexOf(array, x) != -1;
+	}
+	
+	public static boolean contains(long[] array, long x) {
+		return indexOf(array, x) != -1;
+	}
+	
+	public static boolean contains(double[] array, double x) {
+		return indexOf(array, x) != -1;
 	}
 	
 }

@@ -1,4 +1,4 @@
-package fr.wonder.commons.files;
+package fr.wonder.commons.exceptions;
 
 public class ParsingException extends Exception {
 

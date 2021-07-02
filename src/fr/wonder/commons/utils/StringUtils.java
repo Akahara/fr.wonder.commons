@@ -111,8 +111,10 @@ public class StringUtils {
 		return stripped;
 	}
 
-	public static String escape(String text) { // FIX correct the escape function
-		return text.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\"");
+	public static String escape(String text, char quoteSymbol) {
+		return text
+				.replaceAll("\\", "\\\\")
+				.replaceAll(String.valueOf(quoteSymbol), "\\" + quoteSymbol);
 	}
 
 	public static String toString(Map<?, ?> map) {
