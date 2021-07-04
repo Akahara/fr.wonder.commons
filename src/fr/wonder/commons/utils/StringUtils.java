@@ -1,7 +1,9 @@
 package fr.wonder.commons.utils;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -138,6 +140,26 @@ public class StringUtils {
 		if (o.getClass().isArray())
 			return Arrays.deepToString((Object[]) o);
 		return o.toString();
+	}
+
+	@SafeVarargs
+	public static <T> String join(String delimiter, T... objects) {
+		return join(delimiter, objects, String::valueOf);
+	}
+	
+	public static String join(String delimiter, Collection<?> objects) {
+		return join(delimiter, objects, String::valueOf);
+	}
+	
+	public static <T> String join(String delimiter, T[] objects, Function<T, String> function) {
+		String[] strings = new String[objects.length];
+		ArrayOperator.map(objects, strings, function);
+		return String.join(delimiter, strings);
+	}
+	
+	public static <T> String join(String delimiter, Collection<T> objects, Function<T, String> function) {
+		String[] strings = objects.stream().map(function).toArray(String[]::new);
+		return String.join(delimiter, strings);
 	}
 	
 	/**
