@@ -1,7 +1,11 @@
 package fr.wonder.commons.utils;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -41,6 +45,9 @@ public class StringUtils {
 	public static final Pattern STRING_PATTERN = Pattern
 			.compile("\"(([^\"\\\\]*)|(\\\\(\\\\\\\\)*[^\\\\]))*(\\\\\\\\)*\"");
 	
+	/**
+	 * The word pattern is just "\w+"
+	 */
 	public static final Pattern WORD_PATTERN = Pattern
 			.compile("\\w+");
 	
@@ -137,8 +144,11 @@ public class StringUtils {
 	public static String deepToString(Object o) {
 		if (o == null)
 			return "null";
-		if (o.getClass().isArray())
-			return Arrays.deepToString((Object[]) o);
+		if (o.getClass().isArray()) {
+			// o cannot be casted to Object[], use a temporary object array
+			String repr = Arrays.deepToString(new Object[] {o});
+			return repr.substring(2, repr.length()-2);
+		}
 		return o.toString();
 	}
 
@@ -191,6 +201,109 @@ public class StringUtils {
 	 */
 	public static boolean isWordChar(char c) {
 		return isLetterChar(c) || c == '_' || isDigitChar(c);
+	}
+	
+	// TODO comment #toObjectString
+	/**
+	 * Note that if the object's class is not exported by its module most fields
+	 * won't be accessed and "{}" will be returned
+	 */
+	public static String toObjectString(Object o) {
+		if(o == null)
+			return "null";
+		Class<?> clazz = o.getClass();
+		StringBuilder sb = new StringBuilder();
+		if(Number.class.isAssignableFrom(clazz) || clazz == Boolean.class) {
+			return o.toString();
+		} else if(clazz == String.class) {
+			return '"' + (String) o + '"';
+		} else if(clazz.isArray()) {
+			int len = Array.getLength(o);
+			if(len == 0)
+				return "[]";
+			sb.append('[');
+			for(int i = 0; i < len; i++) {
+				sb.append(toObjectString(Array.get(o, i)));
+				sb.append(", ");
+			}
+			sb.setLength(sb.length()-2);
+			sb.append(']');
+		} else {
+			Field[] fields = clazz.getFields();
+			if(fields.length == 0)
+				return "{}";
+			sb.append('{');
+			for(Field f : fields) {
+				try {
+					if(!f.trySetAccessible())
+						continue;
+					sb.append(f.getName() + "=");
+					sb.append(toObjectString(f.get(o)));
+					sb.append(", ");
+				} catch (IllegalAccessException e) {
+					throw new IllegalArgumentException("Unable to access field " + f.getName(), e);
+				}
+			}
+			if(sb.length() > 1)
+				sb.setLength(sb.length()-2);
+			sb.append("}");
+		}
+		return sb.toString();
+	}
+	
+	public static String[] splitWithQuotes(String text, String separator) throws IllegalArgumentException {
+		return splitWithQuotes(text, separator, new char[] { '\'', '"' });
+	}
+
+	public static String[] splitWithQuotes(String text, String separator, char[] quoteMarkers) throws IllegalArgumentException {
+		int[] q = new int[quoteMarkers.length];
+		
+		for(int i = 0; i < q.length; i++)
+			q[i] = text.indexOf(quoteMarkers[i]);
+		
+		int mq = minIdx(q);
+		int s = text.indexOf(separator);
+		if(q[mq] == -1 && s == -1)
+			return new String[] { text };
+		List<String> parts = new ArrayList<>();
+		int l = 0;
+		do {
+			if(q[mq] != -1 && q[mq] < s) {
+				int l2 = text.indexOf(quoteMarkers[mq], q[mq]+1);
+				if(l2 == -1)
+					throw new IllegalArgumentException("Unfinished quote begining at position " + l);
+				if(l != q[mq])
+					parts.add(text.substring(l, q[mq]));
+				parts.add(text.substring(q[mq]+1, l2));
+				l = l2+1;
+			} else {
+				if(l != s)
+					parts.add(text.substring(l, s));
+				l = s+separator.length();
+			}
+			
+			for(int i = 0; i < q.length; i++)
+				if(q[i] != -1 && q[i] < l)
+					q[i] = text.indexOf(quoteMarkers[i], l);
+			if(s != -1 && s < l)
+				s = text.indexOf(separator, l);
+		} while(q[mq] != -1 || s != -1);
+		if(l != text.length())
+			parts.add(text.substring(l));
+		return parts.toArray(String[]::new);
+	}
+	
+	/** Utility method used by {@link #splitWithQuotes(String, String, char[])} */
+	private static int minIdx(int[] m) {
+		int idx = 0, v = m[0];
+		for(int i = 1; i < m.length; i++) {
+			int mi = m[i];
+			if(v == -1 || (mi >= 0 && m[i] < v)) {
+				v = mi;
+				idx = i;
+			}
+		}
+		return idx;
 	}
 	
 }
