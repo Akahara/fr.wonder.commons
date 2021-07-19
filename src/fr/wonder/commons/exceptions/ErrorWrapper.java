@@ -33,6 +33,7 @@ import fr.wonder.commons.loggers.Logger;
 public class ErrorWrapper {
 	
 	private final boolean logTraces;
+	private final ErrorWrapper parent;
 	
 	private final String header;
 	private final List<String> errors = new ArrayList<>();
@@ -40,10 +41,15 @@ public class ErrorWrapper {
 	private final List<ErrorWrapper> subErrors = new ArrayList<>();
 
 	public ErrorWrapper(String header) {
-		this(header, false);
+		this(null, header, false);
 	}
-	
+
 	public ErrorWrapper(String header, boolean logTraces) {
+		this(null, header, logTraces);
+	}
+
+	private ErrorWrapper(ErrorWrapper parent, String header, boolean logTraces) {
+		this.parent = parent;
 		this.header = header;
 		this.logTraces = logTraces;
 	}
@@ -51,11 +57,7 @@ public class ErrorWrapper {
 	public void add(String s) {
 		for(String l : s.split("\n"))
 			errors.add(l);
-		if(true) {
-//			String trace = "";
-//			for(StackTraceElement t : new Exception().getStackTrace())
-//				trace += "("+t.getFileName()+":"+t.getLineNumber()+") ";
-//			errors.add(trace);
+		if(logTraces) {
 			StackTraceElement[] trace = new Exception().getStackTrace();
 			for(int i = 1; i < trace.length; i++)
 				errors.add(" from " + trace[i].toString());
@@ -67,7 +69,7 @@ public class ErrorWrapper {
 	}
 	
 	public ErrorWrapper subErrrors(String header) {
-		ErrorWrapper sub = new ErrorWrapper(header, logTraces);
+		ErrorWrapper sub = new ErrorWrapper(this, header, logTraces);
 		subErrors.add(sub);
 		return sub;
 	}
@@ -82,25 +84,33 @@ public class ErrorWrapper {
 	}
 	
 	public void dump() {
-		dump(System.err, 0);
+		dump(System.err);
 	}
 	
 	public void dump(PrintStream out) {
-		dump(out, 0);
+		if(parent != null) {
+			parent.dump(out);
+		} else {
+			dump(out, 0);
+		}
 	}
 	
 	public void dump(Logger logger) {
-		dump(logger, 0);
+		if(parent != null) {
+			parent.dump(logger);
+		} else {
+			dump(logger, 0);
+		}
 	}
 	
 	private void dump(PrintStream out, int level) {
-		if(noErrors())
-			return;
-		out.println("| ".repeat(level) + header+":");
-		for(String e : errors)
-			out.println("| ".repeat(level+1) + e);
-		for(ErrorWrapper sub : subErrors)
-			sub.dump(out, level+1);
+			if(noErrors())
+				return;
+			out.println("| ".repeat(level) + header+":");
+			for(String e : errors)
+				out.println("| ".repeat(level+1) + e);
+			for(ErrorWrapper sub : subErrors)
+				sub.dump(out, level+1);
 	}
 	
 	private void dump(Logger logger, int level) {
