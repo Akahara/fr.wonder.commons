@@ -62,6 +62,14 @@ public class ErrorWrapper {
 			for(int i = 1; i < trace.length; i++)
 				errors.add(" from " + trace[i].toString());
 		}
+		addToParentChildren();
+	}
+	
+	private void addToParentChildren() {
+		if(parent != null && !parent.subErrors.contains(this)) {
+			parent.addToParentChildren();
+			parent.subErrors.add(this);
+		}
 	}
 
 	public void trace(String s) {
@@ -69,18 +77,11 @@ public class ErrorWrapper {
 	}
 	
 	public ErrorWrapper subErrrors(String header) {
-		ErrorWrapper sub = new ErrorWrapper(this, header, logTraces);
-		subErrors.add(sub);
-		return sub;
+		return new ErrorWrapper(this, header, logTraces);
 	}
 	
 	public boolean noErrors() {
-		if(!errors.isEmpty())
-			return false;
-		for(ErrorWrapper sub : subErrors)
-			if(!sub.noErrors())
-				return false;
-		return true;
+		return errors.isEmpty() && subErrors.isEmpty();
 	}
 	
 	public void dump() {
