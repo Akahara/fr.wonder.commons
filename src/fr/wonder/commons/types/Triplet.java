@@ -24,9 +24,9 @@ public class Triplet<A, B, C> {
 		if(!(o instanceof Triplet))
 			return false;
 		Triplet<?, ?, ?> t = (Triplet<?, ?, ?>) o;
-		return  (a == null ? t.a == null : a.equals(t.a)) &&
-				(b == null ? t.b == null : b.equals(t.b)) &&
-				(c == null ? t.c == null : c.equals(t.c));
+		return Objects.equals(a, t.a) &&
+				Objects.equals(b, t.b) &&
+				Objects.equals(c, t.c);
 	}
 	
 	@Override

@@ -37,15 +37,17 @@ public class ErrorWrapper {
 	
 	private final String header;
 	private final List<String> errors = new ArrayList<>();
+	private boolean parentContainsThis = false;
 	
 	private final List<ErrorWrapper> subErrors = new ArrayList<>();
 
 	public ErrorWrapper(String header) {
-		this(null, header, false);
+		this(header, false);
 	}
 
 	public ErrorWrapper(String header, boolean logTraces) {
 		this(null, header, logTraces);
+		this.parentContainsThis = true;
 	}
 
 	private ErrorWrapper(ErrorWrapper parent, String header, boolean logTraces) {
@@ -55,6 +57,8 @@ public class ErrorWrapper {
 	}
 	
 	public void add(String s) {
+		if(errors.isEmpty() && parent != null)
+			addToParentChildren();
 		for(String l : s.split("\n"))
 			errors.add(l);
 		if(logTraces) {
@@ -62,13 +66,18 @@ public class ErrorWrapper {
 			for(int i = 1; i < trace.length; i++)
 				errors.add(" from " + trace[i].toString());
 		}
-		addToParentChildren();
+	}
+	
+	public void addAndThrow(String s) throws WrappedException {
+		add(s);
+		assertNoErrors();
 	}
 	
 	private void addToParentChildren() {
-		if(parent != null && !parent.subErrors.contains(this)) {
+		if(!parentContainsThis) {
 			parent.addToParentChildren();
 			parent.subErrors.add(this);
+			parentContainsThis = true;
 		}
 	}
 
@@ -76,7 +85,7 @@ public class ErrorWrapper {
 		add(s + ExceptionUtils.toString(new Error()));
 	}
 	
-	public ErrorWrapper subErrrors(String header) {
+	public ErrorWrapper subErrors(String header) {
 		return new ErrorWrapper(this, header, logTraces);
 	}
 	

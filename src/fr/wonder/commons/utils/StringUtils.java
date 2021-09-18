@@ -203,10 +203,19 @@ public class StringUtils {
 		return isLetterChar(c) || c == '_' || isDigitChar(c);
 	}
 	
-	// TODO comment #toObjectString
 	/**
+	 * Creates a string representation of an object recursively.
+	 * 
+	 * <p>
+	 * This method explores all fields of the given object (recursively)
+	 * and appends them to a string representation. This method <b>does not</b>
+	 * handle recursive data structures, if there is a cycle in the data
+	 * (obj1 has a field with value obj2 and obj2 has a field with value obj1)
+	 * this method will cause a stack overflow.
+	 * 
+	 * <p>
 	 * Note that if the object's class is not exported by its module most fields
-	 * won't be accessed and "{}" will be returned
+	 * won't be accessed and "{}" will be returned.
 	 */
 	public static String toObjectString(Object o) {
 		if(o == null)
@@ -254,7 +263,7 @@ public class StringUtils {
 	public static String[] splitWithQuotes(String text, String separator) throws IllegalArgumentException {
 		return splitWithQuotes(text, separator, new char[] { '\'', '"' });
 	}
-
+	// TODO check if this works
 	public static String[] splitWithQuotes(String text, String separator, char[] quoteMarkers) throws IllegalArgumentException {
 		int[] q = new int[quoteMarkers.length];
 		
