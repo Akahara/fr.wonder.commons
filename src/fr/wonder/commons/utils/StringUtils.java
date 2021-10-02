@@ -256,6 +256,9 @@ public class StringUtils {
 	}
 
 	public static String[] splitWithQuotes(String text, String separator, char[] quoteMarkers) throws IllegalArgumentException {
+		if(text.isEmpty())
+			return new String[0];
+		
 		int[] q = new int[quoteMarkers.length];
 		
 		for(int i = 0; i < q.length; i++)
