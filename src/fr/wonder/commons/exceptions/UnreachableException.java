@@ -1,5 +1,10 @@
 package fr.wonder.commons.exceptions;
 
+/**
+ * Unreachable exceptions may be used as a replacement for assertions.
+ * 
+ * <p>They differ from assertions only in their use cases.
+ */
 public class UnreachableException extends Error {
 
 	private static final long serialVersionUID = 333946789414690579L;

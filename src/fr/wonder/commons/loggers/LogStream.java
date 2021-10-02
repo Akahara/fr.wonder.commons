@@ -18,10 +18,14 @@ public class LogStream extends OutputStream {
 
 	@Override
 	public void write(int b) throws IOException {
-		if(b == '\n')
-			flush();
-		else
+		if(b == '\n') {
+			if(length == 0)
+				logger.log("", level);
+			else
+				flush();
+		} else {
 			buffer[length++] = (byte) b;
+		}
 	}
 	
 	@Override

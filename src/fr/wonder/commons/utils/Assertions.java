@@ -3,6 +3,7 @@ package fr.wonder.commons.utils;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 public class Assertions {
 	
@@ -47,7 +48,8 @@ public class Assertions {
 		return assertNonNull(o, null);
 	}
 	
-	public static void assertNonNull(String e, Object... os) {
+	@SafeVarargs
+	public static <T> void assertNonNull(String e, T... os) {
 		assertNonNull(os, e);
 		for(Object o : os)
 			assertNonNull(o, e);
@@ -120,6 +122,32 @@ public class Assertions {
 	
 	public static <T extends Map<?, ?>> T assertFilled(T c) {
 		return assertFilled(c, null);
+	}
+
+	@SafeVarargs
+	public static <T> void assertIn(T obj, String e, T... objects) {
+		for(T t : objects) {
+			if(Objects.equals(obj, t))
+				return;
+		}
+		throw error(e);
+	}
+
+	@SafeVarargs
+	public static <T> void assertIn(T obj, T... objects) {
+		assertIn(obj, null, objects);
+	}
+	
+	public static <T> void assertIn(T obj, String e, Collection<? extends T> objects) {
+		for(T t : objects) {
+			if(Objects.equals(obj, t))
+				return;
+		}
+		throw error(e);
+	}
+	
+	public static <T> void assertIn(T obj, Collection<? extends T> objects) {
+		assertIn(obj, null, objects);
 	}
 
 }

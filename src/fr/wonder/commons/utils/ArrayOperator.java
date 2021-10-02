@@ -122,6 +122,8 @@ public class ArrayOperator<T> {
 	}
 	
 	public static <T> T[] add(T[] array, T[] ts) {
+		if(array.length == 0) return ts;
+		if(ts.length == 0) return array;
 		int al = array.length;
 		array = Arrays.copyOf(array, array.length + ts.length);
 		for(int i = 0; i < ts.length; i++)
@@ -415,6 +417,15 @@ public class ArrayOperator<T> {
 		if(s != array.length)
 			return Arrays.copyOfRange(na, 0, s);
 		return na;
+	}
+	
+	public ArrayOperator<T> removeNull() {
+		removeIf(Predicates::isNull);
+		return this;
+	}
+	
+	public static <T> T[] removeNull(T[] array) {
+		return removeIf(array, Predicates::isNull);
 	}
 
 	public Object[] finish() {
