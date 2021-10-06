@@ -445,7 +445,7 @@ public class ArrayOperator<T> {
 		return this.array.toArray(array);
 	}
 
-	public <R> R concat(BiFunction<R, T, R> generator) {
+	public <R> R concat(BiFunction<R, T, R> generator) { // TODO change to accumulate
 		return concat(generator, null);
 	}
 	

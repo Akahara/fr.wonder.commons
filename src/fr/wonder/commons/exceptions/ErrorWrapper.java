@@ -17,7 +17,7 @@ import fr.wonder.commons.loggers.Logger;
  *     errors.assertNoErrors();
  *     ...
  *     // possible reuse of #errors
- *   } catch (CompilationError x) {
+ *   } catch (WrappedException x) {
  *     errors.dump();
  *   }
  * }
