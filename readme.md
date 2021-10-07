@@ -72,6 +72,10 @@ public @interface PseudoFinal {}
 public @interface Overrideable {}
 ```
 
+### Files
+
+The `fr.wonder.commons.files` package contains utilities methods (`collectFiles`, `extensionFilter`, `getUserHome`, `getExecutionFile`) for file system management.
+
 ## Utilities
 
 The `fr.wonder.commons.utils` package contains a set of utilities that can be used in many cases.
