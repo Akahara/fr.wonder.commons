@@ -265,7 +265,7 @@ public class StringUtils {
 	public static String[] splitWithQuotes(String text, String separator) throws IllegalArgumentException {
 		return splitWithQuotes(text, separator, new char[] { '\'', '"' });
 	}
-	// TODO check if this works
+	// FIX this method currently DOES NOT work, use cautiously or not at all (fix soon)
 	public static String[] splitWithQuotes(String text, String separator, char[] quoteMarkers) throws IllegalArgumentException {
 		if(text.isEmpty())
 			return new String[0];
