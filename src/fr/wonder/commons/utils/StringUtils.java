@@ -237,6 +237,8 @@ public class StringUtils {
 			}
 			sb.setLength(sb.length()-2);
 			sb.append(']');
+		} else if(clazz.isEnum()) {
+			return o.toString();
 		} else {
 			Field[] fields = clazz.getFields();
 			if(fields.length == 0)

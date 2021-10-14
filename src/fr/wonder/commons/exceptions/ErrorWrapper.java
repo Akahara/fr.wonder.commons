@@ -114,13 +114,13 @@ public class ErrorWrapper {
 	}
 	
 	private void dump(PrintStream out, int level) {
-			if(noErrors())
-				return;
-			out.println("| ".repeat(level) + header+":");
-			for(String e : errors)
-				out.println("| ".repeat(level+1) + e);
-			for(ErrorWrapper sub : subErrors)
-				sub.dump(out, level+1);
+		if(noErrors())
+			return;
+		out.println("| ".repeat(level) + header+":");
+		for(String e : errors)
+			out.println("| ".repeat(level+1) + e);
+		for(ErrorWrapper sub : subErrors)
+			sub.dump(out, level+1);
 	}
 	
 	private void dump(Logger logger, int level) {
