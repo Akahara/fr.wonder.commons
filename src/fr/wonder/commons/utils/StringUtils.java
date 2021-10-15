@@ -204,6 +204,32 @@ public class StringUtils {
 	}
 	
 	/**
+	 * Returns the character corresponding to the given escape sequence character.
+	 * <p>
+	 * Escaped characters contains special codes such as the line break '\n',
+	 * form feed '\f', escape character '\\'...
+	 * <p>
+	 * This method does not handle some special characters, the ascii octal and
+	 * hexadecimal '\xhh' notations are not supported, nor are '\a', '\v', '\?'.
+	 * 
+	 * @param escaped the escaped character
+	 * @return the value of '\escaped'
+	 */
+	public static char getEscapedChar(char escaped) {
+		switch(escaped) {
+		case 'b': return '\b';
+		case 'f': return '\f';
+		case 'n': return '\n';
+		case 'r': return '\r';
+		case 't': return '\t';
+		case '\'': return '\'';
+		case '\"': return '\"';
+		case '\\': return '\\';
+		}
+		throw new IllegalArgumentException("Invalid escape sequence \"\\" + escaped + "\"");
+	}
+	
+	/**
 	 * Creates a string representation of an object recursively.
 	 * 
 	 * <p>
@@ -265,59 +291,76 @@ public class StringUtils {
 	public static String[] splitWithQuotes(String text, String separator) throws IllegalArgumentException {
 		return splitWithQuotes(text, separator, new char[] { '\'', '"' });
 	}
-	// FIX this method currently DOES NOT work, use cautiously or not at all (fix soon)
-	public static String[] splitWithQuotes(String text, String separator, char[] quoteMarkers) throws IllegalArgumentException {
-		if(text.isEmpty())
-			return new String[0];
-		
-		int[] q = new int[quoteMarkers.length];
-		
-		for(int i = 0; i < q.length; i++)
-			q[i] = text.indexOf(quoteMarkers[i]);
-		
-		int mq = minIdx(q);
-		int s = text.indexOf(separator);
-		if(q[mq] == -1 && s == -1)
-			return new String[] { text };
-		List<String> parts = new ArrayList<>();
-		int l = 0;
-		do {
-			if(q[mq] != -1 && q[mq] < s) {
-				int l2 = text.indexOf(quoteMarkers[mq], q[mq]+1);
-				if(l2 == -1)
-					throw new IllegalArgumentException("Unfinished quote begining at position " + l);
-				if(l != q[mq])
-					parts.add(text.substring(l, q[mq]));
-				parts.add(text.substring(q[mq]+1, l2));
-				l = l2+1;
-			} else {
-				if(l != s)
-					parts.add(text.substring(l, s));
-				l = s+separator.length();
-			}
-			
-			for(int i = 0; i < q.length; i++)
-				if(q[i] != -1 && q[i] < l)
-					q[i] = text.indexOf(quoteMarkers[i], l);
-			if(s != -1 && s < l)
-				s = text.indexOf(separator, l);
-		} while(q[mq] != -1 || s != -1);
-		if(l != text.length())
-			parts.add(text.substring(l));
-		return parts.toArray(String[]::new);
-	}
 	
-	/** Utility method used by {@link #splitWithQuotes(String, String, char[])} */
-	private static int minIdx(int[] m) {
-		int idx = 0, v = m[0];
-		for(int i = 1; i < m.length; i++) {
-			int mi = m[i];
-			if(v == -1 || (mi >= 0 && m[i] < v)) {
-				v = mi;
-				idx = i;
+	/**
+	 * Splits a text according to the given separator and quote markers.
+	 * <p>
+	 * This method is similar to {@code String.split} but handles quotes and not
+	 * regexp as separator.
+	 * 
+	 * <pre><blockquote>
+	 * splitWithQuotes("abc \\\" def \"gh ij\" kl", " ", {'"'}) == ["abc", "\"", "def", "gh ij", "kl"]
+	 * </blockquote></pre>
+	 * <p>
+	 * When using multiple quote markers, note that they are not differentiated, for
+	 * example if {@code quoteMarkers == ["\"","'"]}, a string that begins with
+	 * {@code "} can end with {@code '}, so escape any of these character in a text
+	 * sequence.
+	 * <p>
+	 * Original source code from java2s.com
+	 * 
+	 * @param text         the text to split
+	 * @param separator    a non regexp separator that will be used to split the
+	 *                     text
+	 * @param quoteMarkers a set of markers used to delimit regions
+	 * @return the spliced text
+	 */
+	public static String[] splitWithQuotes(String text, String separator, char[] quoteMarkers) {
+		List<String> strings = new ArrayList<>();
+		int level = 0;
+		StringBuffer buffer = new StringBuffer();
+		for(int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			if(ArrayOperator.contains(quoteMarkers, c)) {
+				if(i == 0) {
+					level++;
+					if(level == 1)
+						continue;
+				} else if(text.startsWith(separator, i - 1)) {
+					i += separator.length()-1;
+					level++;
+					if(level == 1)
+						continue;
+				} else if(i == text.length() - 1) {
+					level--;
+					if(level == 0)
+						continue;
+				} else if(text.startsWith(separator, i + 1)) {
+					level--;
+					i += separator.length()-1;
+					if(level == 0)
+						continue;
+				} else if(ArrayOperator.contains(quoteMarkers, text.charAt(i + 1))) {
+					level--;
+					if(level == 0)
+						continue;
+				}
+			} else if(c == '\\' && i < text.length() - 1 &&
+					ArrayOperator.contains(quoteMarkers, text.charAt(i + 1))) {
+				c = text.charAt(i+1);
+				i++;
+			} else if(level == 0 && text.charAt(i) == ' ') {
+				if(buffer.length() > 0) {
+					strings.add(buffer.toString());
+					buffer.setLength(0);
+				}
+			} else {
+				buffer.append(c);
 			}
 		}
-		return idx;
+		if(buffer.length() != 0)
+			strings.add(buffer.toString());
+		return strings.toArray(String[]::new);
 	}
 	
 }
