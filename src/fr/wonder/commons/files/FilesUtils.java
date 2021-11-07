@@ -28,10 +28,26 @@ public class FilesUtils {
 	 * Returns the .jar file the class is located in. If the class was loaded with a
 	 * {@link ServiceLoader} the jar file is the loaded jar, not the jar that
 	 * instantiated the loader.
+	 * 
+	 * @param file the execution class
+	 * @return the file from which the class was loaded
 	 */
 	public static File getExecutionFile(Class<?> clazz) {
 		try {
 			return new File(clazz.getProtectionDomain().getCodeSource().getLocation().toURI());
+		} catch (URISyntaxException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * Returns the .jar file this class is located in.
+	 * 
+	 * @return the file from which this class was loaded
+	 */
+	public static File getExecutionFile() {
+		try {
+			return new File(FilesUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 		} catch (URISyntaxException e) {
 			return null;
 		}
@@ -44,26 +60,40 @@ public class FilesUtils {
 	 * @return the file name without its extension
 	 */
 	public static String getFileName(File file) {
-		String name = file.getName();
+		return getFileName(file.getName());
+	}
+	
+	/**
+	 * Returns the file name without its extension if it has one
+	 * 
+	 * @param name the file name (not a path)
+	 * @return the file name without its extension
+	 */
+	public static String getFileName(String name) {
 		int dot = name.lastIndexOf('.');
 		if (dot == -1)
 			return name;
 		return name.substring(0, dot);
 	}
 
+
 	/**
-	 * Returns {@code null} if the file name does not contains a dot, otherwise
-	 * returns all characters following the last dot.
-	 * 
-	 * <p>
-	 * To check if a file has an extension this method is slower than just matching
-	 * the file name: <code>file.getName().endsWith(".ext")</code>
+	 * Returns the file's extension if it has one, null otherwise.
 	 * 
 	 * @param file the file
 	 * @return the file extension, or null if it does not have one
 	 */
 	public static String getFileExtension(File file) {
-		String name = file.getName();
+		return getFileExtension(file.getName());
+	}
+	
+	/**
+	 * Returns the file's extension if it has one, null otherwise.
+	 * 
+	 * @param name the file name (not path)
+	 * @return the file extension, or null if it does not have one
+	 */
+	public static String getFileExtension(String name) {
 		int dot = name.lastIndexOf('.');
 		if (dot == -1)
 			return null;
