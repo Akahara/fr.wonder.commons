@@ -24,6 +24,8 @@ public class LogStream extends OutputStream {
 			else
 				flush();
 		} else {
+			if(length == buffer.length)
+				flush();
 			buffer[length++] = (byte) b;
 		}
 	}

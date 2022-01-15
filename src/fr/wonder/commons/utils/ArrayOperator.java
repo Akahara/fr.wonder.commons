@@ -547,5 +547,15 @@ public class ArrayOperator<T> {
 	public static boolean contains(double[] array, double x) {
 		return indexOf(array, x) != -1;
 	}
+
+	public static <T, R> R accumulate(T[] array, BiFunction<R, T, R> accumulator, R seed) {
+		for(T t : array)
+			seed = accumulator.apply(seed, t);
+		return seed;
+	}
+
+	public static <T, R> R accumulate(T[] array, BiFunction<R, T, R> accumulator) {
+		return accumulate(array, accumulator, null);
+	}
 	
 }

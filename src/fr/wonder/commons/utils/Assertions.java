@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class Assertions {
 	
-	static AssertionError error(String s) {
+	private static AssertionError assertionError(String s) {
 		AssertionError e = new AssertionError(s);
 		StackTraceElement[] trace = e.getStackTrace();
 		int removeCount = 1;
@@ -20,7 +20,7 @@ public class Assertions {
 	
 	public static boolean assertTrue(boolean b, String e) {
 		if(!b)
-			throw error(e);
+			throw assertionError(e);
 		return b;
 	}
 	
@@ -30,7 +30,7 @@ public class Assertions {
 	
 	public static boolean assertFalse(boolean b, String e) {
 		if(b)
-			throw error(e);
+			throw assertionError(e);
 		return b;
 	}
 	
@@ -40,7 +40,7 @@ public class Assertions {
 	
 	public static <T> T assertNonNull(T o, String e) {
 		if(o == null)
-			throw error(e);
+			throw assertionError(e);
 		return o;
 	}
 	
@@ -57,7 +57,7 @@ public class Assertions {
 
 	public static void assertNull(Object o, String e) {
 		if(o != null)
-			throw error(e);
+			throw assertionError(e);
 	}
 	
 	public static void assertNull(Object o) {
@@ -66,7 +66,7 @@ public class Assertions {
 
 	public static <T> T[] assertEmpty(T[] c, String e) {
 		if(c == null || c.length != 0)
-			throw error(e);
+			throw assertionError(e);
 		return c;
 	}
 	
@@ -76,7 +76,7 @@ public class Assertions {
 
 	public static <T extends Collection<?>> T assertEmpty(T c, String e) {
 		if(c == null || !c.isEmpty())
-			throw error(e);
+			throw assertionError(e);
 		return c;
 	}
 	
@@ -86,7 +86,7 @@ public class Assertions {
 	
 	public static <T extends Map<?, ?>> T assertEmpty(T c, String e) {
 		if(c == null || !c.isEmpty())
-			throw error(e);
+			throw assertionError(e);
 		return c;
 	}
 	
@@ -96,13 +96,13 @@ public class Assertions {
 
 	public static <T extends Collection<?>> T assertFilled(T c, String e) {
 		if(c == null || c.isEmpty())
-			throw error(e);
+			throw assertionError(e);
 		return c;
 	}
 
 	public static <T> T[] assertFilled(T[] c, String e) {
 		if(c == null || c.length == 0)
-			throw error(e);
+			throw assertionError(e);
 		return c;
 	}
 	
@@ -116,7 +116,7 @@ public class Assertions {
 	
 	public static <T extends Map<?, ?>> T assertFilled(T c, String e) {
 		if(c == null || c.isEmpty())
-			throw error(e);
+			throw assertionError(e);
 		return c;
 	}
 	
@@ -130,7 +130,7 @@ public class Assertions {
 			if(Objects.equals(obj, t))
 				return;
 		}
-		throw error(e);
+		throw assertionError(e);
 	}
 
 	@SafeVarargs
@@ -143,7 +143,7 @@ public class Assertions {
 			if(Objects.equals(obj, t))
 				return;
 		}
-		throw error(e);
+		throw assertionError(e);
 	}
 	
 	public static <T> void assertIn(T obj, Collection<? extends T> objects) {
