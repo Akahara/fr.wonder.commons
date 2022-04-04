@@ -1,15 +1,20 @@
 package fr.wonder.commons.loggers;
 
+import java.util.Objects;
+
 public class DeleguateLogger extends NullLogger {
 	
 	private String header;
 	private Logger logger;
 	
 	public DeleguateLogger(Logger logger, String header) {
-		if(logger == null)
-			throw new NullPointerException();
-		this.logger = logger;
+		this.logger = Objects.requireNonNull(logger);
 		this.header = header == null ? "" : header+": ";
+	}
+	
+	@Override
+	public void setLogLevel(int level) {
+		logger.setLogLevel(level);
 	}
 	
 	@Override
@@ -36,5 +41,5 @@ public class DeleguateLogger extends NullLogger {
 	public void err(String s) {
 		logger.err(header+s);
 	}
-
+	
 }

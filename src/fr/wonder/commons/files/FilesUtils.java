@@ -175,15 +175,6 @@ public class FilesUtils {
 	}
 
 	public static String read(File file) throws IOException {
-//		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-//			StringBuilder sb = new StringBuilder();
-//			String line;
-//			while ((line = reader.readLine()) != null) {
-//				sb.append(line);
-//				sb.append('\n');
-//			}
-//			return sb.toString();
-//		}
 		try(InputStream is = new FileInputStream(file)) {
 			return new String(is.readAllBytes());
 		}
@@ -298,6 +289,20 @@ public class FilesUtils {
 	 */
 	public static List<File> listTrueFiles(File dir) {
 		return listFiles(dir, File::isFile);
+	}
+	
+	/**
+	 * Returns the first file that exists in the given array, or null if none exist.
+	 * 
+	 * @param files the files to search in
+	 * @return the first file that exists in the given array
+	 */
+	public static File firstAlternative(File... files) {
+		for(File f : files) {
+			if(f.exists())
+				return f;
+		}
+		return null;
 	}
 
 }

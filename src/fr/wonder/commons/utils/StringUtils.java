@@ -25,22 +25,18 @@ public class StringUtils {
 	 * Beware that only double quotes are matched.
 	 * 
 	 * <p>
-	 * For example <blockquote>
-	 * 
-	 * <pre>
+	 * For example
+	 * <blockquote><pre>
 	 * String text = "Text: \"citation of \\\"The book\\\"\"";
 	 * Matcher m = STRING_PATTERN.matcher(text);
 	 * m.find();
 	 * System.out.println(m.group());
-	 * </blockquote>
-	 * </pre>
+	 * </pre></blockquote>
 	 * 
-	 * will print <blockquote>
-	 * 
-	 * <pre>
+	 * will print 
+	 * <blockquote><pre>
 	 * citation of "The book"
-	 * </blockquote>
-	 * </pre>
+	 * </pre></blockquote>
 	 */
 	public static final Pattern STRING_PATTERN = Pattern
 			.compile("\"(([^\"\\\\]*)|(\\\\(\\\\\\\\)*[^\\\\]))*(\\\\\\\\)*\"");
@@ -162,8 +158,7 @@ public class StringUtils {
 	}
 	
 	public static <T> String join(String delimiter, T[] objects, Function<T, String> function) {
-		String[] strings = new String[objects.length];
-		ArrayOperator.map(objects, strings, function);
+		String[] strings = ArrayOperator.map(objects, new String[objects.length], function);
 		return String.join(delimiter, strings);
 	}
 	
