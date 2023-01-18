@@ -358,4 +358,48 @@ public class StringUtils {
 		return strings.toArray(String[]::new);
 	}
 	
+	public static String formatAnsi(String format, Object... args) {
+		StringBuilder sb = new StringBuilder(String.format(format, args));
+		int sqMarker = -1;
+		while((sqMarker = sb.indexOf("$", sqMarker+1)) != -1) {
+			if(sqMarker == sb.length()-2)
+				break;
+			char c = sb.charAt(sqMarker+1);
+			int read = 1;
+			String ansi = null;
+			if(isDigitChar(c)) {
+				for(; read < 3; read++) {
+					char cc = sb.charAt(sqMarker+1+read);
+					if(cc == 'b')
+						ansi = "\u001b[48;5;" + sb.substring(sqMarker+1, sqMarker+1+read) + "m";
+					else if(cc == 'f')
+						ansi = "\u001b[38;5;" + sb.substring(sqMarker+1, sqMarker+1+read) + "m";
+					if(!isDigitChar(cc))
+						break;
+				}
+				if(ansi == null)
+					throw new IllegalArgumentException("Undefined color sequence " + sb.substring(sqMarker, sqMarker+3));
+			} else {
+				read++;
+				switch(c) {
+				case 'R': ansi = "\u001b[0m"; break; // R - reset
+				case 'B': ansi = "\u001b[38;5;0m";   break; // B - black
+				case 'w': ansi = "\u001b[38;5;255m"; break; // w - white
+				case 'r': ansi = "\u001b[38;5;1m";   break; // r - red
+				case 'g': ansi = "\u001b[38;5;2m";   break; // g - green
+				case 'b': ansi = "\u001b[38;5;4m";   break; // b - blue
+				case 'y': ansi = "\u001b[38;5;3m";   break; // y - yellow
+				case 'p': ansi = "\u001b[38;5;93m";  break; // p - purple
+				case 'c': ansi = "\u001b[38;5;6m";   break; // c - cyan
+				case 'l': ansi = "\u001b[38;5;10m";  break; // l - light green
+				case '$': ansi = "$"; break;
+				default: throw new IllegalArgumentException("Undefined color sequence " + c);
+				}
+			}
+			sb.replace(sqMarker, sqMarker+read, ansi);
+		}
+		sb.append("\u001b[0m");
+		return sb.toString();
+	}
+	
 }

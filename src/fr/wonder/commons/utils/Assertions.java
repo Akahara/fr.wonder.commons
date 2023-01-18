@@ -8,7 +8,7 @@ import java.util.Objects;
 public class Assertions {
 	
 	private static AssertionError assertionError(String s) {
-		AssertionError e = new AssertionError(s);
+		AssertionError e = new AssertionError(s == null ? "" : s);
 		StackTraceElement[] trace = e.getStackTrace();
 		int removeCount = 1;
 		String className = Assertions.class.getName();

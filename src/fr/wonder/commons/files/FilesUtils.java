@@ -305,4 +305,14 @@ public class FilesUtils {
 		return null;
 	}
 
+	public static String getSizeString(int sizeInBytes) {
+		if(sizeInBytes > SIZE_1G)
+			return Math.floor((float)sizeInBytes/SIZE_1G*10)/10 + "Gb";
+		if(sizeInBytes > SIZE_1M)
+			return Math.floor((float)sizeInBytes/SIZE_1M*10)/10 + "Mb";
+		if(sizeInBytes > SIZE_1K)
+			return Math.floor((float)sizeInBytes/SIZE_1K*10)/10 + "Kb";
+		return sizeInBytes + "b";
+	}
+
 }

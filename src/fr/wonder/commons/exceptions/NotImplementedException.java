@@ -12,27 +12,27 @@ package fr.wonder.commons.exceptions;
  * searched for through code. If not implicit the user should add comments to
  * why they throw an unimplemented exception in the first place.
  */
-public class UnimplementedException extends Error {
+public class NotImplementedException extends Error {
 
 	private static final long serialVersionUID = 4422736032832254876L;
 
-	public UnimplementedException() {
+	public NotImplementedException() {
 		super();
 	}
 
-	public UnimplementedException(String message) {
+	public NotImplementedException(String message) {
 		super(message);
 	}
 
-	public UnimplementedException(String message, Throwable cause) {
+	public NotImplementedException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public UnimplementedException(Throwable cause) {
+	public NotImplementedException(Throwable cause) {
 		super(cause);
 	}
 
-	protected UnimplementedException(String message, Throwable cause, boolean enableSuppression,
+	protected NotImplementedException(String message, Throwable cause, boolean enableSuppression,
 			boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
